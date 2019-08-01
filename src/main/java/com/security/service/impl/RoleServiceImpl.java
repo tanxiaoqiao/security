@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -75,5 +76,10 @@ public class RoleServiceImpl implements RoleService {
         RoleDto dto = new RoleDto();
         BeanUtils.copyProperties(entity, dto);
         return dto;
+    }
+
+    @Override
+    public List<Role> findAll() {
+        return roleRep.findAll();
     }
 }

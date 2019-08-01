@@ -1,12 +1,11 @@
 package com.security.controller;
 
 import com.security.annotation.JpaPage;
-import com.security.entity.User;
-import com.security.service.UserService;
+import com.security.entity.UserRoleRel;
+import com.security.service.UserRoleRelService;
 import com.security.util.Pagination;
 import com.security.constant.ErrorEnum;
-import com.security.model.UserDto;
-import com.security.util.PasswordUtils;
+import com.security.model.UserRoleRelDto;
 import com.security.util.ResponseObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,59 +19,59 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@Api(tags = "User")
-public class UserController {
+@Api(tags = "UserRoleRel")
+public class UserRoleRelController {
 
     @Autowired
-    UserService userService;
+    UserRoleRelService userRoleRelService;
 
 
-    @GetMapping("/api/user")
+    @GetMapping("/api/userRoleRel")
     @JpaPage
     @ApiOperation(value = "分页查询")
-    public ResponseObject<Pagination<User>> findPage() {
-        Page<User> pageList = userService.findPage();
-        Pagination<User> pagination = new Pagination<User>((int) pageList.getTotalElements(), pageList.getContent());
+    public ResponseObject<Pagination<UserRoleRel>> findPage() {
+        Page<UserRoleRel> pageList = userRoleRelService.findPage();
+        Pagination<UserRoleRel> pagination = new Pagination<UserRoleRel>((int) pageList.getTotalElements(), pageList.getContent());
         return ResponseObject.success(pagination);
     }
 
     @ApiOperation(value = "通过ID查找")
-    @GetMapping("/api/user/{id}")
+    @GetMapping("/api/userRoleRel/{id}")
     public ResponseObject findOne(@PathVariable("id") Long id) {
-        Optional<User> entity = userService.findById(id);
+        Optional<UserRoleRel> entity = userRoleRelService.findById(id);
         if (entity.isPresent()) {
-            return ResponseObject.success(userService.toDto(entity.get()));
+            return ResponseObject.success(userRoleRelService.toDto(entity.get()));
         }
-        return ResponseObject.fail(ErrorEnum.PARAMS_ERROR);
+        return ResponseObject.fail(ErrorEnum.NOT_FOUND);
     }
 
-    @PostMapping("/api/user")
+    @PostMapping("/api/userRoleRel")
     @ApiOperation(value = "保存实体")
-    public ResponseObject save(@ApiParam @Validated @RequestBody UserDto dto) {
-        User entity = userService.toEntity(dto);
-        entity.setPassword(PasswordUtils.sha256Encode(dto.getPassword()));
-        userService.save(entity);
+    public ResponseObject save(@ApiParam @Validated @RequestBody UserRoleRelDto dto) {
+        UserRoleRel entity = userRoleRelService.toEntity(dto);
+
+        userRoleRelService.save(entity);
         return ResponseObject.success("OK");
     }
 
 
-    @PatchMapping("/api/user")
+    @PatchMapping("/api/userRoleRel")
     @ApiOperation(value = "部分更新")
-    public ResponseObject patchUpdate(@ApiParam @RequestBody UserDto dto) {
-        Optional<User> op = userService.findById(dto.getId());
+    public ResponseObject patchUpdate(@ApiParam @RequestBody UserRoleRelDto dto) {
+        Optional<UserRoleRel> op = userRoleRelService.findById(dto.getId());
         if (op.isPresent()) {
-            User entity = op.get();
+            UserRoleRel entity = op.get();
             BeanUtils.copyProperties(dto, entity);
-            userService.save(entity);
+            userRoleRelService.save(entity);
             return ResponseObject.success("OK");
         }
         return ResponseObject.fail(ErrorEnum.SERVER_ERROR);
     }
 
     @ApiOperation(value = "删除单个实体")
-    @DeleteMapping("/api/user/{id}")
+    @DeleteMapping("/api/userRoleRel/{id}")
     public ResponseObject<String> delete(@PathVariable("id") Long id) {
-        userService.deleteById(id);
+        userRoleRelService.deleteById(id);
         return ResponseObject.success("OK");
     }
 }

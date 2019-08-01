@@ -24,7 +24,7 @@ public class CodeGenerat {
 
     @Test
     public void contextLoads() throws ClassNotFoundException, IOException, TemplateException {
-        String entityName = "Resource";
+        String entityName = "UserRoleRel";
         String serviceName = "security";
         String projectPath = "/Users/xiaoqiao/IdeaProjects/security";
 

@@ -1,8 +1,17 @@
 package com.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.security.model.UserDto;
 import lombok.Data;
+import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @Author: Kris
@@ -11,11 +20,60 @@ import javax.persistence.*;
 @Table
 @Entity(name = "se_user")
 @Data
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String name;
+
+    private String password;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<UserRoleRel> userRoleRels;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> auths = new ArrayList<>();
+        List<UserRoleRel> urrs = this.getUserRoleRels();
+        for (UserRoleRel urr : urrs) {
+            auths.add(new SimpleGrantedAuthority(urr.getRole().getName()));
+        }
+        return auths;
+    }
+
+    @Override
+    public String getUsername() {
+        return name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
+
+    public UserDto toUser() {
+        UserDto userDto = new UserDto();
+
+        BeanUtils.copyProperties(this, userDto);
+
+        return userDto;
+    }
 }

@@ -3,6 +3,7 @@ package com.security.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @Author: Kris
@@ -18,4 +19,9 @@ public class Resource {
     private long id;
 
     private String url;
+
+    private String method;
+
+    @OneToMany(mappedBy = "resource")
+    private List<RoleResourceRel> roleResourceRels;
 }

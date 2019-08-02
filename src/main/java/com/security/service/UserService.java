@@ -11,4 +11,6 @@ public interface UserService extends BaseService<User> {
     UserDto toDto(User entity);
 
     User findByName(String name);
+
+    User findByNameAndPassword(String name,String password);
 }

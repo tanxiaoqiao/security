@@ -1,5 +1,7 @@
 package com.security.security;
 
+import com.security.security.login.LoginFailureHandler;
+import com.security.security.login.LoginSuccessHandler;
 import com.security.security.login.UserDetailsServiceImpl;
 import com.security.security.logout.LogoutSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +11,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 
 /**
  * @Author: Kris
@@ -49,29 +56,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .anyRequest().authenticated()
-                .and().formLogin()
-                //.loginPage("/login")
-                //设置默认登录成功跳转页面
-                .defaultSuccessUrl("/index")
-                .failureUrl("/login?error")
-                .permitAll()
-                .and()
-                //开启cookie保存用户数据
-                .rememberMe()
-                //设置cookie有效期
-                .tokenValiditySeconds(60 * 60 * 24 * 7)
-                //设置cookie的私钥
-                .key("demoSecurity")
-                .and()
-                .logout()
-                //默认注销行为为logout，可以通过下面的方式来修改
-                .logoutUrl("/custom-logout")
-                //设置注销成功后跳转页面，默认是跳转到登录页面
-                .logoutSuccessUrl("")
-                .logoutSuccessHandler(new LogoutSuccessHandler())
-                .permitAll();
+        http.formLogin()
+                .failureHandler(new LoginFailureHandler())
+                .successHandler(new LoginSuccessHandler())
+                .loginProcessingUrl("/login")
+                .usernameParameter("username")
+                .passwordParameter("password");
+
+        http.securityContext().securityContextRepository(new HttpSessionSecurityContextRepository());
+
+        /** ------------  关闭cache，避免session分布式存储到redis中时导致反序列化问题  ---------- **/
+        http.requestCache().requestCache(new NullRequestCache());
+
+        /**-------------  其他安全配置  ------------**/
+        http.headers()
+                .xssProtection().xssProtectionEnabled(false).and()  // 开启XSS攻击防护
+                .frameOptions().sameOrigin();  // 允许页面加载同源下的iframe
+        http.sessionManagement()
+                .maximumSessions(10)
+                .sessionRegistry(getSessionRegistry())
+                .expiredUrl("/");
+        http.csrf().disable();
+        http.cors(); // 开启Cors跨域,会自动加载CorsFilter
+        http.rememberMe();
     }
 
     @Override
@@ -84,4 +91,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean("sessionRegistry")
+    public SessionRegistry getSessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 }

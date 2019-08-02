@@ -50,7 +50,7 @@ public class UserController {
     @ApiOperation(value = "保存实体")
     public ResponseObject save(@ApiParam @Validated @RequestBody UserDto dto) {
         User entity = userService.toEntity(dto);
-        entity.setPassword(PasswordUtils.sha256Encode(dto.getPassword()));
+
         userService.save(entity);
         return ResponseObject.success("OK");
     }

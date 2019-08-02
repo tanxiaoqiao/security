@@ -10,6 +10,6 @@ public class UserDto implements Serializable {
 
     private long id;
 
-    private  String name;
+    private  String username;
     private  String password;
 }

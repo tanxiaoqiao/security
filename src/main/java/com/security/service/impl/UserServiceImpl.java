@@ -5,6 +5,7 @@ import com.security.repository.UserRepository;
 import com.security.service.UserService;
 import com.security.util.JpaUtils;
 import com.security.model.UserDto;
+import com.security.util.PasswordUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User entity) {
+        entity.setPassword(PasswordUtils.sha256Encode(entity.getPassword()));
         userRep.save(entity);
     }
 
@@ -79,6 +81,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByName(String name) {
-        return userRep.findByName( name);
+        return userRep.findByUsername( name);
+    }
+
+    @Override
+    public User findByNameAndPassword(String name, String password) {
+        String pwd = PasswordUtils.sha256Encode(password);
+        return userRep.findByUsernameAndPassword(name,pwd);
     }
 }

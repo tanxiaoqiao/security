@@ -26,7 +26,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String name;
+    private String username;
 
     private String password;
 
@@ -34,10 +34,14 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<UserRoleRel> userRoleRels;
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auths = new ArrayList<>();
         List<UserRoleRel> urrs = this.getUserRoleRels();
+        if (urrs == null) {
+            return null;
+        }
         for (UserRoleRel urr : urrs) {
             auths.add(new SimpleGrantedAuthority(urr.getRole().getName()));
         }
@@ -46,27 +50,27 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return name;
+        return username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     public UserDto toUser() {
@@ -76,4 +80,6 @@ public class User implements UserDetails {
 
         return userDto;
     }
+
+
 }

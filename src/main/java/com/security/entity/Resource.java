@@ -1,5 +1,6 @@
 package com.security.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,5 +24,6 @@ public class Resource {
     private String method;
 
     @OneToMany(mappedBy = "resource")
+    @JsonIgnore
     private List<RoleResourceRel> roleResourceRels;
 }

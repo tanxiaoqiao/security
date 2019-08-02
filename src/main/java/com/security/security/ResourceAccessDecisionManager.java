@@ -13,23 +13,12 @@ import java.util.Iterator;
 
 /**
  * 访问决策管理器，只在用户登录后生效
- *
  */
 public class ResourceAccessDecisionManager implements AccessDecisionManager {
 
 
-
     @Override
     public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes) throws AccessDeniedException, InsufficientAuthenticationException {
-        /**
-         * 判断用户是否为匿名用户
-         * 此处出现匿名用户的情况有两种：一种是用户未登录时发送请求，一种是用户已登录但请求允许匿名访问的接口。
-         * 匿名用户的请求直接返回，当前决策器不做校验
-         /*       *//*
-        if (SecurityUtil.isAnonymousUrl(SessionUtils.getRequest())) {
-            return;
-        }*/
-
 
         if (configAttributes == null) {
             throw new AccessDeniedException("");

@@ -6,6 +6,7 @@ import com.security.entity.User;
 import com.security.entity.UserRoleRel;
 import com.security.exception.BusinessException;
 import com.security.service.UserService;
+import com.security.util.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,11 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         for (UserRoleRel role : user.getUserRoleRels()) {
             authorities.add(new SimpleGrantedAuthority(role.getRole().getName()));
         }
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        // 加密
-        String encodedPassword = passwordEncoder.encode(user.getPassword().trim());
-        user.setPassword(encodedPassword);
-        return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 }
 

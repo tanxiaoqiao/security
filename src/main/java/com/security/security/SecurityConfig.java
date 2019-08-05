@@ -73,7 +73,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .xssProtection().xssProtectionEnabled(false).and()  // 开启XSS攻击防护
                 .frameOptions().sameOrigin();  // 允许页面加载同源下的iframe
         http.sessionManagement()
-                .maximumSessions(10)
+                //一个用户最多可以10个地点登陆
+                .maximumSessions(3)
                 .sessionRegistry(getSessionRegistry())
                 .expiredUrl("/");
         http.csrf().disable();

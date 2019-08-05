@@ -22,7 +22,6 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class RedisResourceInitService {
 
-    ExecutorService executor = Executors.newCachedThreadPool();
 
     @Autowired
     RoleService roleService;
